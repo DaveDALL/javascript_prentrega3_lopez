@@ -643,7 +643,7 @@ function comprarProductos ( ) {
          }
 		 totalInfo = totalInfo + Number(producto.subtotal)
      })
-	alert("Su Total es de: $" + totalInfo.toFixed())
+	alert("Su Total es de: $" + totalInfo.toFixed(2))
 	localStorage.removeItem("total")
 	localStorage.removeItem("carritoCompra")
     carritoDeCompra = [ ]
@@ -723,7 +723,7 @@ function crearListaCarrito (productosParaCarrito, total) {
     bolsaCarrito.innerHTML = `
         <p>CARRITO DE COMPRAS</p>
 		<button id="comprar">Comprar Productos</button>
-		<p>\nSu total de compra es de $${total.toFixed()}</p>
+		<p>\nSu total de compra es de $${total.toFixed(2)}</p>
     `
     productosParaCarrito.forEach(producto => {
 		let cajaCarrito = document.createElement("div")
@@ -731,7 +731,7 @@ function crearListaCarrito (productosParaCarrito, total) {
         cajaCarrito.innerHTML += `
             <div>${producto.nombre}</div>
             <div>${producto.piezas}</div>
-            <div>${producto.subtotal}</div>
+            <div>$${producto.subtotal.toFixed(2)}</div>
         `
         bolsaCarrito.appendChild(cajaCarrito)
     })
