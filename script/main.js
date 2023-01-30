@@ -617,23 +617,28 @@ let productos = [
 
 let carritoDeCompra = []
 
+//Recuperación del Carrito de Compra y del Total de Local Storage cuando se refresca la ventana del Explorador
 if (localStorage.getItem("carritoCompra")) {
 	carritoDeCompra = JSON.parse(localStorage.getItem("carritoCompra"))
 	let total = JSON.parse(localStorage.getItem("total"))
 	crearListaCarrito(carritoDeCompra, total)
 }
 
+//Se llama a la funcion para Crear las tarjetas de los productos
 CrearTarjetaProducto(productos)
 
+//Se captura el input y se lanza el evento de entrada para  buscar productos
 let busqueda = document.getElementById("buscar")
 busqueda.oninput = buscadorProducto
 
+//Funcion para realizar busqueda de productos a traves del Input
 function buscadorProducto ( ) {
 	let productosBuscados = []
     productosBuscados = productos.filter(producto => producto.nombre.toLowerCase().includes(busqueda.value.toLowerCase()) || producto.marca.toLowerCase().includes(busqueda.value.toLowerCase()))
     CrearTarjetaProducto(productosBuscados)
 }
 
+//Funcion de Compra de Productos despues de hacer clic en el boton COMPRAR PRODUCTOS
 function comprarProductos ( ) {
 	let totalInfo = 0
     carritoDeCompra.forEach(producto => {
@@ -644,6 +649,7 @@ function comprarProductos ( ) {
 		 totalInfo = totalInfo + Number(producto.subtotal)
      })
 	alert("Su Total es de: $" + totalInfo.toFixed(2))
+	//Se elimina de local storage las claves total y Carrito de Compra
 	localStorage.removeItem("total")
 	localStorage.removeItem("carritoCompra")
     carritoDeCompra = [ ]
@@ -651,6 +657,7 @@ function comprarProductos ( ) {
 	CrearTarjetaProducto(productos)
 }
 
+//Funcion que crea las tarjetas de los productos
 function CrearTarjetaProducto (arregloProductos) {
     let bolsaProductos = document.getElementById("contenedorProductos")
     bolsaProductos.innerHTML = " "
@@ -685,11 +692,13 @@ function CrearTarjetaProducto (arregloProductos) {
             cajaProducto.appendChild(stockCero)
 		}
         bolsaProductos.append(cajaProducto)
+		// Se captura el boton de Agrgar al Carrito y se agraga evento para capturar el clic
 		let botonCarrito = document.getElementById(producto.id)
 		botonCarrito.onclick = ponerEnCarritoProductos
     })
 }
 
+//Funcion que pone en el carrito de compra un producto al hacer clic en boton Agrgar a Carrito
 function ponerEnCarritoProductos (e) {
     let ponerProducto = productos.find(producto => producto.id == e.target.id)
     if(ponerProducto.stock > 0) {
@@ -713,11 +722,13 @@ function ponerEnCarritoProductos (e) {
 	carritoDeCompra.forEach(producto => {
 		total += Number(producto.subtotal)
 	})
+	// Se manda al Local Storage el Arreglo de Carrito de Compra y el total; y se manda a la funcion para crear la tarjeta
     localStorage.setItem("carritoCompra", JSON.stringify(carritoDeCompra))
 	localStorage.setItem("total", total)
     crearListaCarrito(carritoDeCompra, total)
 }
 
+//Funcion que crea la tarjeta del Carrito de Compra
 function crearListaCarrito (productosParaCarrito, total) {
     let bolsaCarrito = document.getElementById("contenedorCarrito")
     bolsaCarrito.innerHTML = `
@@ -735,6 +746,8 @@ function crearListaCarrito (productosParaCarrito, total) {
         `
         bolsaCarrito.appendChild(cajaCarrito)
     })
+
+	//Se captura el boton de Comprar Producto y se crea evento de clic sobre el boton
 	let comprar = document.getElementById("comprar")
 	comprar.onclick = comprarProductos
 }
