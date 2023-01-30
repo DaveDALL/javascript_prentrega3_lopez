@@ -619,7 +619,8 @@ let carritoDeCompra = []
 
 if (localStorage.getItem("carritoCompra")) {
 	carritoDeCompra = JSON.parse(localStorage.getItem("carritoCompra"))
-	crearListaCarrito(carritoDeCompra)
+	let total = JSON.parse(localStorage.getItem("total"))
+	crearListaCarrito(carritoDeCompra, total)
 }
 
 CrearTarjetaProducto(productos)
@@ -634,15 +635,19 @@ function buscadorProducto ( ) {
 }
 
 function comprarProductos ( ) {
+	let totalInfo = 0
     carritoDeCompra.forEach(producto => {
          if(producto.id == productos.id) {
              let indexGlobal = productos.findIndex(productoBuscado => productoBuscado == producto)
              productos[indexGlobal].stock = productos[indexGlobal].stock - producto.piezas
          }
+		 totalInfo = totalInfo + Number(producto.subtotal)
      })
+	alert("Su Total es de: $" + totalInfo.toFixed())
+	localStorage.removeItem("total")
 	localStorage.removeItem("carritoCompra")
-    carritoDeCompra = []
-    crearListaCarrito(carritoDeCompra)
+    carritoDeCompra = [ ]
+	crearListaCarrito(carritoDeCompra, 0)
 	CrearTarjetaProducto(productos)
 }
 
@@ -666,13 +671,19 @@ function CrearTarjetaProducto (arregloProductos) {
                 <img src=${producto.imagen} />
             </div>
         `
-        if(producto.stock <= 5) {
+        if(producto.stock <= 5 && producto.stock > 0) {
             cajaProducto.classList.add("pocoStock")
             let stockBajo = document.createElement("p")
             stockBajo.innerText = "Queda poco Stock, Haz tu pedido...!!"
             stockBajo.classList.add("bajoStock")
             cajaProducto.appendChild(stockBajo)
-        }
+        } else if (producto.stock == 0) {
+			cajaProducto.classList.add("sinStock")
+			let stockCero = document.createElement("p")
+            stockCero.innerText = "Por el momento no contamos con Stock...!!"
+            stockCero.classList.add("stockCero")
+            cajaProducto.appendChild(stockCero)
+		}
         bolsaProductos.append(cajaProducto)
 		let botonCarrito = document.getElementById(producto.id)
 		botonCarrito.onclick = ponerEnCarritoProductos
@@ -690,7 +701,7 @@ function ponerEnCarritoProductos (e) {
             productos[indexGolbal].stock--
         } else {
             ponerProducto.piezas = 1
-            ponerProducto.subtotal =ponerProducto.precio
+            ponerProducto.subtotal = ponerProducto.precio
             let indexGolbal = productos.findIndex(producto => producto == ponerProducto)
             productos[indexGolbal].stock--
             carritoDeCompra.push(ponerProducto)
@@ -698,15 +709,21 @@ function ponerEnCarritoProductos (e) {
     } else {
         alert("NO HAY EXISTENCIAS")
     }
+	let total = 0
+	carritoDeCompra.forEach(producto => {
+		total += Number(producto.subtotal)
+	})
     localStorage.setItem("carritoCompra", JSON.stringify(carritoDeCompra))
-    crearListaCarrito(carritoDeCompra)
+	localStorage.setItem("total", total)
+    crearListaCarrito(carritoDeCompra, total)
 }
 
-function crearListaCarrito (productosParaCarrito) {
+function crearListaCarrito (productosParaCarrito, total) {
     let bolsaCarrito = document.getElementById("contenedorCarrito")
     bolsaCarrito.innerHTML = `
         <p>CARRITO DE COMPRAS</p>
 		<button id="comprar">Comprar Productos</button>
+		<p>\nSu total de compra es de $${total.toFixed()}</p>
     `
     productosParaCarrito.forEach(producto => {
 		let cajaCarrito = document.createElement("div")

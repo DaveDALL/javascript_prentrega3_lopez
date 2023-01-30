@@ -88,6 +88,12 @@ h2 {
     color:chartreuse;
     background-color: deeppink;
 }
+.blisterProducto .stockCero {
+    font-size: 120%;
+    text-align:center;
+    color:chartreuse;
+    background-color: deeppink;
+}
 .blisterProducto button {
     padding: 5px;
     align-content: center;
